@@ -1,6 +1,7 @@
 #include <Wire.h>
 
-#define as5048b_Address 0x40  // left motor 0x40,right motor 0x41
+#define as5048b_Address_L 0x40  // left motor 0x40,
+#define as5048b_Address_R 0x41  //right motor 0x41
 #define request_num 2         // request 2 byte 
 #define angleRegAdd 0xFE
 #define RESOLUTION 16384.0    ////14 bits
@@ -33,8 +34,9 @@ void setup()
 
 void loop() 
 { 
-  uint16_t receiveValue = 0;
-  
+     uint16_t receiveValue_L = 0;
+     uint16_t receiveValue_R = 0;
+     
       digitalWrite(LeftMotorDire,1);                         // drive left  motor forward
       analogWrite(LeftMotorSpeed,200);
       digitalWrite(RightMotorDir,0);                         // drive right motor forward
@@ -42,26 +44,33 @@ void loop()
       delayMicroseconds(500);                            // limit full power to 50uS
 
   
-  writeReg(angleRegAdd);
-  receiveValue = readValue();
-  double angle = (receiveValue / RESOLUTION) * 360.0;
-  Serial.println(angle);
+  writeReg(angleRegAdd,as5048b_Address_L);
+  receiveValue_L = readValue(as5048b_Address_L);
+  writeReg(angleRegAdd,as5048b_Address_R);
+  receiveValue_R = readValue(as5048b_Address_R);
+  double angle1 = (receiveValue_L / RESOLUTION) * 360.0;
+  double angle2 = (receiveValue_R / RESOLUTION) * 360.0;
+  Serial.print("angle_L: ");  
+  Serial.println(angle1);
+  Serial.print("angle_R: ");  
+  Serial.println(angle2);
+  delay(2000);  
 }
 /*
 write the Register adrress
 */
-void writeReg(uint8_t address){
-  Wire.beginTransmission(as5048b_Address);
+void writeReg(uint8_t address,uint8_t As5048Address){
+  Wire.beginTransmission(As5048Address);
   Wire.write(address);            
   Wire.endTransmission(false);//sends a restart message after transmission
 }
 /*
   16 bit value got from 2 8bits registers (7..0 MSB + 5..0 LSB) => 14 bits value
 */
-uint16_t readValue(void){
+uint16_t readValue(int as5048b_Address){
    byte readArray[2];
    uint16_t readValue = 0;
-   Wire.requestFrom(as5048b_Address, request_num); 
+   Wire.requestFrom(as5048b_Address,request_num); 
   for (byte i = 0; i < request_num; i++) 
   {
     readArray[i] = Wire.read();
