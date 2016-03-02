@@ -36,25 +36,37 @@ void loop()
 { 
      uint16_t receiveValue_L = 0;
      uint16_t receiveValue_R = 0;
-     
-      digitalWrite(LeftMotorDire,1);                         // drive left  motor forward
-      analogWrite(LeftMotorSpeed,200);
-      digitalWrite(RightMotorDir,0);                         // drive right motor forward
-      analogWrite(RightMotorSpeed,200);
-      delayMicroseconds(500);                            // limit full power to 50uS
-
-  
-  writeReg(angleRegAdd,as5048b_Address_L);
-  receiveValue_L = readValue(as5048b_Address_L);
-  writeReg(angleRegAdd,as5048b_Address_R);
-  receiveValue_R = readValue(as5048b_Address_R);
-  double angle1 = (receiveValue_L / RESOLUTION) * 360.0;
-  double angle2 = (receiveValue_R / RESOLUTION) * 360.0;
-  Serial.print("angle_L: ");  
-  Serial.println(angle1);
-  Serial.print("angle_R: ");  
-  Serial.println(angle2);
-  delay(2000);  
+     bool isSend = false;
+     if(Serial.available()){
+        int com = Serial.read();
+             if(com==49){
+                  isSend = true;
+                  digitalWrite(LeftMotorDire,1);                         // drive left  motor forward
+                  analogWrite(LeftMotorSpeed,200);
+                  digitalWrite(RightMotorDir,0);                         // drive right motor forward
+                  analogWrite(RightMotorSpeed,200);                            
+         }
+       else if(com==48){
+            isSend = false;
+            digitalWrite(LeftMotorDire,1);                         // drive left  motor forward
+            analogWrite(LeftMotorSpeed,0);
+            digitalWrite(RightMotorDir,1);                         // drive right motor forward
+            analogWrite(RightMotorSpeed,0);
+       }
+     }
+     if(isSend){
+                 writeReg(angleRegAdd,as5048b_Address_L);
+                  receiveValue_L = readValue(as5048b_Address_L);
+                  writeReg(angleRegAdd,as5048b_Address_R);
+                  receiveValue_R = readValue(as5048b_Address_R);
+                  double angle1 = (receiveValue_L / RESOLUTION) * 360.0;
+                  double angle2 = (receiveValue_R / RESOLUTION) * 360.0;
+                  Serial.print("angle_L=");  
+                  Serial.print(angle1);
+                  Serial.print("    angle_R=");  
+                  Serial.println(angle2);
+                  //delayMicroseconds(500);       // limit full power to   
+     }
 }
 /*
 write the Register adrress
