@@ -1,0 +1,39 @@
+/******************
+creat by Dash
+2016-03-03
+
+
+-******************/
+#if ARDUINO >= 100
+    #include <Arduino.h>
+#else
+   #include <WProgram.h>
+  #endif
+
+
+
+#ifndef MotorandAs5048_H_
+#define MotorandAs5048_H_
+
+#define LeftMotorBrake    4  //  D4 - left  motor brake        control    pin    HIGH = Brake 
+#define LeftMotorDire     2  //  D2 - left  motor direction    control    pin    HIGH = Forward   Low = Reverse
+#define LeftMotorSpeed     3  //  D3 - left  motor pulse width  modulation pin    0 - 255          Speed and Brake 
+
+
+#define RightMotorBrake   9  //  D9 - right motor brake        control    pin    HIGH = Brake 
+#define RightMotorDir    10  // D10 - right motor direction    control    pin    HIGH = Forward   Low = Reverse
+#define RightMotorSpeed    11  // D11 - right motor pulse width  modulation pin    0 - 255          Speed and Brake 
+
+
+class MotorandAs5048
+{
+public:
+	MotorandAs5048();
+	~MotorandAs5048();
+	void motorInit();
+	void goForwaed();
+	void Brake(int side);
+	
+};
+
+#endif

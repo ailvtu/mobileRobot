@@ -1,0 +1,27 @@
+#include "MotorandAs5048.h"
+
+MotorandAs5048::MotorandAs5048(){
+	return;
+}
+
+MotorandAs5048::~MotorandAs5048(){
+	return;
+}
+void MotorandAs5048::motorInit(){
+
+  pinMode(LeftMotorSpeed,OUTPUT); 
+  pinMode(LeftMotorDire,OUTPUT);                            
+  pinMode(LeftMotorBrake,OUTPUT);
+
+
+  pinMode(RightMotorSpeed,OUTPUT);  
+  pinMode(RightMotorDir,OUTPUT);                            
+  pinMode(RightMotorBrake,OUTPUT);           
+}
+
+void MotorandAs5048::goForwaed(){
+                 digitalWrite(LeftMotorDire,1);                         // drive left  motor forward
+                  analogWrite(LeftMotorSpeed,200);
+                  digitalWrite(RightMotorDir,0);                         // drive right motor forward
+                  analogWrite(RightMotorSpeed,200);                            
+}
