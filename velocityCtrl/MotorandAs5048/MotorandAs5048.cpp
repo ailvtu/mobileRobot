@@ -76,6 +76,42 @@ uint16_t MotorandAs5048::readValue(int as5048b_Address){
 	readValue = (readArray[0] << 6) + (readArray[1] & 0x3F); 
 	return readValue;
 	}
+
+/*********
+**********/
+void MotorandAs5048::setZeroReg(void) {
+             writeReg(angleRegAdd,as5048b_Address_L);
+	uint16_t zero1 = MotorandAs5048::readValue(as5048b_Address_L);
+	writeReg(angleRegAdd,as5048b_Address_R);
+	uint16_t zero2 = MotorandAs5048::readValue(as5048b_Address_R);
+	MotorandAs5048::zeroRegW(zero1,zero2);
+	return;
+}
+
+/**************************************************************************/
+
+/**************************************************************************/
+void MotorandAs5048::zeroRegW(uint16_t regVal1,uint16_t regVal2) {
+
+	MotorandAs5048::writeZero(AS5048B_ZEROMSB_REG, (uint8_t) (regVal1 >> 6),as5048b_Address_L);
+	MotorandAs5048::writeZero(AS5048B_ZEROLSB_REG, (uint8_t) (regVal1 & 0x3F),as5048b_Address_L);
+
+	MotorandAs5048::writeZero(AS5048B_ZEROMSB_REG, (uint8_t) (regVal2 >> 6),as5048b_Address_R);
+	MotorandAs5048::writeZero(AS5048B_ZEROLSB_REG, (uint8_t) (regVal2 & 0x3F),as5048b_Address_R);
+	return;
+}
+
+void MotorandAs5048::writeZero(uint8_t address, uint8_t value,uint8_t As5048Address) {
+
+	Wire.beginTransmission(As5048Address);
+	Wire.write(address);
+	Wire.write(value);
+	Wire.endTransmission();
+
+	return;
+}
+
+
 /*******************
 
 ******************/

@@ -27,6 +27,10 @@ creat by Dash
 
 #define as5048b_Address_L 0x40  // left motor 0x40,
 #define as5048b_Address_R 0x41  //right motor 0x41
+
+#define AS5048B_ZEROMSB_REG 0x16 //bits 0..7
+#define AS5048B_ZEROLSB_REG 0x17 //bits 0..5
+
 #define request_num 2         // request 2 byte 
 #define angleRegAdd 0xFE
 #define RESOLUTION 16383.0    ////14 bits
@@ -40,7 +44,10 @@ public:
 	void motorInit();
 	void goForwaed();
 	void Brake(int side);	
-
+           
+             void setZeroReg(void);
+             void zeroRegW(uint16_t regVal1,uint16_t regVal2);
+             void writeZero(uint8_t address, uint8_t value,uint8_t As5048Address) ;
 
 	void writeReg(uint8_t address,uint8_t As5048Address);
 	uint16_t readValue(int as5048b_Address);
