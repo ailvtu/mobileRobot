@@ -10,8 +10,13 @@
 
 *****************************/
 MotorandAs5048::MotorandAs5048(){
+	Wire.begin();
 	receiveValue_L = 0;
              receiveValue_R = 0;
+             Serial.begin(9600);
+            // spL1 =MotorandAs5048::getPoint(0);
+  	//spR1 = MotorandAs5048::getPoint(1);
+  	lastT = millis();
 	return;
 }
 /*****************************
@@ -25,8 +30,7 @@ MotorandAs5048::~MotorandAs5048(){
 *****************************/
 void MotorandAs5048::motorInit(){
              
-             Wire.begin();
-
+             
 	pinMode(LeftMotorSpeed,OUTPUT); 
 	pinMode(LeftMotorDire,OUTPUT);                            
 	pinMode(LeftMotorBrake,OUTPUT);
@@ -41,9 +45,9 @@ void MotorandAs5048::motorInit(){
 *****************************/
 void MotorandAs5048::goForwaed(){
 	digitalWrite(LeftMotorDire,1);                         // drive left  motor forward
-	analogWrite(LeftMotorSpeed,200);
-	digitalWrite(RightMotorDir,0);                         // drive right motor forward
-	analogWrite(RightMotorSpeed,200);                            
+	analogWrite(LeftMotorSpeed,255);
+	digitalWrite(RightMotorDir,1);                         // drive right motor forward
+	analogWrite(RightMotorSpeed,255);                            
 }
 /*****************************
 
@@ -107,7 +111,6 @@ void MotorandAs5048::writeZero(uint8_t address, uint8_t value,uint8_t As5048Addr
 	Wire.write(address);
 	Wire.write(value);
 	Wire.endTransmission();
-
 	return;
 }
 
@@ -115,13 +118,86 @@ void MotorandAs5048::writeZero(uint8_t address, uint8_t value,uint8_t As5048Addr
 /*******************
 
 ******************/
-double MotorandAs5048::getSpeed(){
+double MotorandAs5048::getPoint(int side ){
+	double angle;
+	if (side==0){
 	writeReg(angleRegAdd,as5048b_Address_L);
 	receiveValue_L = readValue(as5048b_Address_L);
+	angle = (receiveValue_L / RESOLUTION) * 360.0;
+	
+	}
+	if (side ==1){
 	writeReg(angleRegAdd,as5048b_Address_R);
 	receiveValue_R = readValue(as5048b_Address_R);
-	double angle1 = (receiveValue_L / RESOLUTION) * 360.0;
-	double angle2 = (receiveValue_R / RESOLUTION) * 360.0;
-             speed = (angle1+angle2);//never compute
-	return speed;
+	 angle = (receiveValue_R / RESOLUTION) * 360.0;
+	}
+	return angle;
 }
+void  MotorandAs5048::getSpeed(){
+  
+	double errL,errR ;
+	unsigned long errTime;
+	// Serial.print("L:");
+	//  Serial.println(spL2);
+	/*
+	spL1 = m.getPoint(1);
+	Serial.print("R:");
+	Serial.println(spL1);
+	*/
+	//sp2 = m.getPoint(1);
+	nowT = millis();
+	errTime = (nowT- lastT)/1000;
+	spL2 = MotorandAs5048::getPoint(0);
+	if(spL2<spL1)
+		{ 
+		errL = spL1- spL2;
+		}
+	else
+		{
+		spL1 = spL1+360;
+		errL = spL1 - spL2;
+		spL1 = spL1-360;
+		}
+	/*
+	Serial.print("SP1:");
+	Serial.print(spL1);
+	Serial.print("  SP2:");
+	Serial.print(spL2);
+	Serial.print("  errL:");
+	Serial.println(errL);*/
+	velo1 = (errL/360)*64/errTime;
+	///*****////
+
+
+
+	spR2 =MotorandAs5048::getPoint(1);
+		if(spR2>spR1)
+		{ 
+		errR = spR2 - spR1;
+		}
+	else
+		{
+		spR2 = spR2+360;
+		errR = spR2 - spR1;
+		spR2 = spR2-360;
+		}
+	/*
+	Serial.print("SPR1:");
+	Serial.print(spR1);
+	Serial.print("  SPR2:");
+	Serial.print(spR2);
+	Serial.print("  errR:");
+	Serial.println(errR);
+	Serial.print("  errTime:");
+	Serial.println(errTime);*/
+	velo2 =  (errR/360)*64/errTime;
+             Serial.print("  velo1:");
+	Serial.println(velo1);
+	Serial.print("  velo2:");
+	Serial.println(velo2);
+	//*********/
+	spL1 = spL2;
+	spR1 = spR2;
+	lastT = nowT;
+}
+

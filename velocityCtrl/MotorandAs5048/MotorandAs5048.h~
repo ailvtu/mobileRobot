@@ -34,7 +34,7 @@ creat by Dash
 #define request_num 2         // request 2 byte 
 #define angleRegAdd 0xFE
 #define RESOLUTION 16383.0    ////14 bits
-
+//#define circle   64  //circle 64cm
 
 class MotorandAs5048
 {
@@ -51,11 +51,17 @@ public:
 
 	void writeReg(uint8_t address,uint8_t As5048Address);
 	uint16_t readValue(int as5048b_Address);
-             double getSpeed();
+             double getPoint(int side);
+             void  getSpeed();
+             
+
 private:
 	 uint16_t receiveValue_L ;
               uint16_t receiveValue_R ;
               double  speed ;
+              double spL1,spL2,spR1,spR2;
+              double velo1,velo2;
+	 unsigned long lastT,nowT;
 };
 
 #endif

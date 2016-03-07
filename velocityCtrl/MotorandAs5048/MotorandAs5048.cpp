@@ -13,9 +13,6 @@ MotorandAs5048::MotorandAs5048(){
 	Wire.begin();
 	receiveValue_L = 0;
              receiveValue_R = 0;
-             Serial.begin(9600);
-            // spL1 =MotorandAs5048::getPoint(0);
-  	//spR1 = MotorandAs5048::getPoint(1);
   	lastT = millis();
 	return;
 }
@@ -29,7 +26,9 @@ MotorandAs5048::~MotorandAs5048(){
 
 *****************************/
 void MotorandAs5048::motorInit(){
-             
+
+             spL1 =MotorandAs5048::getPoint(0);
+  	spR1 = MotorandAs5048::getPoint(1);
              
 	pinMode(LeftMotorSpeed,OUTPUT); 
 	pinMode(LeftMotorDire,OUTPUT);                            
@@ -43,10 +42,10 @@ void MotorandAs5048::motorInit(){
 /*****************************
 
 *****************************/
-void MotorandAs5048::goForwaed(){
-	digitalWrite(LeftMotorDire,1);                         // drive left  motor forward
+void MotorandAs5048::goForward( int dir){
+	digitalWrite(LeftMotorDire,dir);                         // drive left  motor forward
 	analogWrite(LeftMotorSpeed,255);
-	digitalWrite(RightMotorDir,1);                         // drive right motor forward
+	digitalWrite(RightMotorDir,dir);                         // drive right motor forward
 	analogWrite(RightMotorSpeed,255);                            
 }
 /*****************************
@@ -133,71 +132,88 @@ double MotorandAs5048::getPoint(int side ){
 	}
 	return angle;
 }
-void  MotorandAs5048::getSpeed(){
-  
+void  MotorandAs5048::getSpeed(int direction){
+  //the problem is not solving the wheel s have run more one circle
 	double errL,errR ;
 	unsigned long errTime;
-	// Serial.print("L:");
-	//  Serial.println(spL2);
-	/*
-	spL1 = m.getPoint(1);
-	Serial.print("R:");
-	Serial.println(spL1);
-	*/
-	//sp2 = m.getPoint(1);
 	nowT = millis();
 	errTime = (nowT- lastT)/1000;
-	spL2 = MotorandAs5048::getPoint(0);
-	if(spL2<spL1)
-		{ 
-		errL = spL1- spL2;
-		}
-	else
-		{
-		spL1 = spL1+360;
-		errL = spL1 - spL2;
-		spL1 = spL1-360;
-		}
-	/*
-	Serial.print("SP1:");
-	Serial.print(spL1);
-	Serial.print("  SP2:");
-	Serial.print(spL2);
-	Serial.print("  errL:");
-	Serial.println(errL);*/
-	velo1 = (errL/360)*64/errTime;
-	///*****////
+            if(direction==1){   //backward Left motor angle is decreasing and right is opposite
+	            	spL2 = MotorandAs5048::getPoint(0);
+		if(spL2<spL1)
+			{ 
+			errL = spL1- spL2;
+			}
+		else
+			{
+			spL1 = spL1+360;
+			errL = spL1 - spL2;
+			spL1 = spL1-360;
+			}
+		
+		velo1 = (errL/360)*64/errTime;  //64:the circle of wheel
+		///*****////
 
+		spR2 =MotorandAs5048::getPoint(1);
+			if(spR2>spR1)
+			{ 
+			
+			errR = spR2 - spR1;
+			}
+		else
+			{
+		
+			spR2 = spR2+360;
+			errR = spR2 - spR1;
+			spR2 = spR2-360;
+			}
+		
+		velo2 =  (errR/360)*64/errTime;
+            }
+	if(direction==0){//  //backward right angle is decreasing and left opposite
+	            	spR2 = MotorandAs5048::getPoint(1);
+		if(spR2<spR1)
+			{ 
+			errR= spR1- spR2;
+			}
+		else
+			{
+			spR1 = spR1+360;
+			errR = spR1 - spR2;
+			spR1 = spR1-360;
+			}
+		
+		velo2 = (errR/360)*64/errTime;
+		///*****////
 
-
-	spR2 =MotorandAs5048::getPoint(1);
-		if(spR2>spR1)
-		{ 
-		errR = spR2 - spR1;
-		}
-	else
-		{
-		spR2 = spR2+360;
-		errR = spR2 - spR1;
-		spR2 = spR2-360;
-		}
-	/*
-	Serial.print("SPR1:");
-	Serial.print(spR1);
-	Serial.print("  SPR2:");
-	Serial.print(spR2);
-	Serial.print("  errR:");
-	Serial.println(errR);
-	Serial.print("  errTime:");
-	Serial.println(errTime);*/
-	velo2 =  (errR/360)*64/errTime;
-             Serial.print("  velo1:");
-	Serial.println(velo1);
-	Serial.print("  velo2:");
-	Serial.println(velo2);
+		spL2 =MotorandAs5048::getPoint(0);
+			if(spL2>spL1)
+			{ 
+			
+			errL = spL2 - spL1;
+			}
+		else
+			{
+			
+			spL2 = spL2+360;
+			errL = spL2 - spL1;
+			spL2 = spL2-360;
+			}
+		
+		velo1 =  (errL/360)*64/errTime;
+            }
+      
 	//*********/
 	spL1 = spL2;
 	spR1 = spR2;
 	lastT = nowT;
 }
+void  MotorandAs5048::printInf(){
+
+	Serial.print("  velo1:");
+	Serial.println(velo1);
+	Serial.print("  velo2:");
+	Serial.println(velo2);
+}
+
 

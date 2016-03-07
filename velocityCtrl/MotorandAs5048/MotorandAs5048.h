@@ -42,7 +42,7 @@ public:
 	MotorandAs5048();
 	~MotorandAs5048();
 	void motorInit();
-	void goForwaed();
+	void goForward(int dir);
 	void Brake(int side);	
            
              void setZeroReg(void);
@@ -52,8 +52,8 @@ public:
 	void writeReg(uint8_t address,uint8_t As5048Address);
 	uint16_t readValue(int as5048b_Address);
              double getPoint(int side);
-             void  getSpeed();
-             
+             void  getSpeed(int direction);
+             void  printInf();
 
 private:
 	 uint16_t receiveValue_L ;

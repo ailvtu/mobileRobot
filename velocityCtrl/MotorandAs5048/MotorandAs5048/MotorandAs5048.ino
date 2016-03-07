@@ -2,6 +2,9 @@
 #include <Wire.h>
 #include <MotorandAs5048.h>
 #include <PID_v1.h>
+#define forward  0
+#define backward  1
+
 
 MotorandAs5048  m;
 
@@ -27,7 +30,7 @@ void setup(){
   
 }
 void loop(){
- m.goForwaed();
+ m.goForward(forward);
  //m.Brake( RightMotorBrake);
 /*
  GetSpeed();
@@ -36,8 +39,9 @@ void loop(){
   Serial.print("RV:");
  Serial.println(velo2);
  */
- m.getSpeed();
- Serial.print(m.velo1);
+ m.getSpeed(forward);
+ m.printInf();
+ //Serial.print(m.velo1);
 // Input = 200;
 // myPID.Compute();
 // Serial.println(Output);
