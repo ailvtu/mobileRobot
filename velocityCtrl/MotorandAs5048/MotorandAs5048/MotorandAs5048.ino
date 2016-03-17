@@ -2,6 +2,7 @@
 #include <Wire.h>
 #include <MotorandAs5048.h>
 #include <PID_v1.h>
+
 #define forward  0
 #define backward  1
 
@@ -25,12 +26,9 @@ void setup(){
   
   // MsTimer2::set(100, timerGetSpeed); // 500ms period
   // MsTimer2::start();
-
-
-  
+m.setSpeed(forward,forward,255,255);
 }
 void loop(){
- m.goForward(forward);
  //m.Brake( RightMotorBrake);
 /*
  GetSpeed();
@@ -39,17 +37,17 @@ void loop(){
   Serial.print("RV:");
  Serial.println(velo2);
  */
- m.getSpeed(forward);
+
  m.printInf();
- //Serial.print(m.velo1);
+//Serial.println(m.velo1);
+//Serial.println(m.velo2);
 // Input = 200;
 // myPID.Compute();
 // Serial.println(Output);
 // digitalWrite(LeftMotorDire,1);    
 // analogWrite(LeftMotorSpeed,Output);
- 
   //analogWrite(6, Output);Serial.print("Output:" );Serial.println(Output);
- delay(1000);
+ delay(100);
 }
 
 

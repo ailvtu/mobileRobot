@@ -42,16 +42,20 @@ void MotorandAs5048::motorInit(){
 /*****************************
 
 *****************************/
-void MotorandAs5048::goForward( int dir){
-	digitalWrite(LeftMotorDire,dir);                         // drive left  motor forward
-	analogWrite(LeftMotorSpeed,255);
-	digitalWrite(RightMotorDir,dir);                         // drive right motor forward
-	analogWrite(RightMotorSpeed,255);                            
+void MotorandAs5048::setSpeed(int dirL,int dirR,int pwmL,int pwmR){
+	digitalWrite(LeftMotorDire,dirL);                         // drive left  motor forward
+	analogWrite(LeftMotorSpeed,pwmL);
+	digitalWrite(RightMotorDir,dirR);                         // drive right motor forward
+	analogWrite(RightMotorSpeed,pwmR);                            
 }
+void MotorandAs5048::checkSpeed(){
+           
+
+}
+
 /*****************************
 
 *****************************/
-
 void MotorandAs5048::Brake(int side){
 	digitalWrite(side,1);
 }
@@ -132,12 +136,12 @@ double MotorandAs5048::getPoint(int side ){
 	}
 	return angle;
 }
-void  MotorandAs5048::getSpeed(int direction){
+void  MotorandAs5048::convertoSpeed(int direction,double &velo1,double &velo2){
   //the problem is not solving the wheel s have run more one circle
 	double errL,errR ;
 	unsigned long errTime;
 	nowT = millis();
-	errTime = (nowT- lastT)/1000;
+	errTime = (nowT- lastT);
             if(direction==1){   //backward Left motor angle is decreasing and right is opposite
 	            	spL2 = MotorandAs5048::getPoint(0);
 		if(spL2<spL1)
@@ -151,7 +155,7 @@ void  MotorandAs5048::getSpeed(int direction){
 			spL1 = spL1-360;
 			}
 		
-		velo1 = (errL/360)*64/errTime;  //64:the circle of wheel
+		velo1 =1000*(errL/360)*64/errTime;  //64:the circle of wheel
 		///*****////
 
 		spR2 =MotorandAs5048::getPoint(1);
@@ -168,7 +172,7 @@ void  MotorandAs5048::getSpeed(int direction){
 			spR2 = spR2-360;
 			}
 		
-		velo2 =  (errR/360)*64/errTime;
+		velo2 = 1000*(errR/360)*64/errTime;
             }
 	if(direction==0){//  //backward right angle is decreasing and left opposite
 	            	spR2 = MotorandAs5048::getPoint(1);
@@ -182,8 +186,14 @@ void  MotorandAs5048::getSpeed(int direction){
 			errR = spR1 - spR2;
 			spR1 = spR1-360;
 			}
-		
-		velo2 = (errR/360)*64/errTime;
+		velo2 =1000* (errR/360)*64/errTime;
+		/*
+		Serial.print("errR:");
+		Serial.print(errR);
+		Serial.print("   errTime:");
+		Serial.print(errTime);
+		Serial.print("  velo2:");
+	             Serial.println(velo2);*/
 		///*****////
 
 		spL2 =MotorandAs5048::getPoint(0);
@@ -200,20 +210,72 @@ void  MotorandAs5048::getSpeed(int direction){
 			spL2 = spL2-360;
 			}
 		
-		velo1 =  (errL/360)*64/errTime;
+		
+		velo1 =  1000*(errL/360)*64/errTime;
+/*
+		Serial.print("errL:");
+		Serial.print(errL);
+		Serial.print("   errTime:");
+		Serial.print(errTime);
+		Serial.print("  velo1:");
+	             Serial.println(velo1);*/
             }
       
 	//*********/
 	spL1 = spL2;
 	spR1 = spR2;
 	lastT = nowT;
+	//Serial.print(velo1);
 }
+
 void  MotorandAs5048::printInf(){
 
+
+	float sumL=0;
+	float sumR=0;
+	velo1=velo2=0;
+	int count = 0;
+             for (int i = 0; i < 50; i++)
+             {
+             MotorandAs5048::convertoSpeed(0,velo1,velo2);
+          
+             Serial.print("  velo1:");
+	Serial.println(velo1);
+	Serial.print("  velo2:");
+	Serial.println(velo2);   
+             //delay(10);
+             if(velo1<30&&velo2<30){
+             sumL=sumL+velo1;    
+             sumR=sumR+velo2;  
+             count++;
+             }
+             }
+               
+                  Serial.print("count:");
+	      Serial.println(count);
+   	     Serial.print("sumL:");
+	      Serial.println(sumL);
+	      Serial.print("sumR:");
+	      Serial.println(sumR);
+
+                
+
+             float vL = sumL/(count-1);
+              sumL=0;
+             float vR = sumR/(count-1);
+             sumR=0;
+             count=0;
+             Serial.print("  vL:");
+	Serial.println(vL);
+	Serial.print("  vR:");
+	Serial.println(vR);
+             //delay(10);
+           
+             
+           /*
 	Serial.print("  velo1:");
 	Serial.println(velo1);
 	Serial.print("  velo2:");
-	Serial.println(velo2);
+	Serial.println(velo2);   */
 }
-
 
