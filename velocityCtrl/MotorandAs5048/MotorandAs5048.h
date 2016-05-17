@@ -69,7 +69,7 @@ private:
               uint16_t receiveValue_R ;
               double  speed ;
               double spL1,spL2,spR1,spR2;
-         unsigned long lastT,nowT;
+             unsigned long lastT,nowT;
               double velo1,velo2;
 };
 

@@ -18,6 +18,7 @@ void loop()
   receiveValue = readValue();
   double angle = (receiveValue / RESOLUTION) * 360.0;
   Serial.println(angle);
+  delay(1000);
 }
 /*
 write the Register adrress

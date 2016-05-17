@@ -6,6 +6,7 @@
 #define forward  0
 #define backward  1
 
+double sum,vel;
 
 MotorandAs5048  m;
 
@@ -29,7 +30,9 @@ void setup(){
 m.setSpeed(forward,forward,255,255);
 }
 void loop(){
- //m.Brake( RightMotorBrake);
+
+  //m.printInf();
+double v = filter(10);
 /*
  GetSpeed();
  Serial.print("LV:");
@@ -37,17 +40,51 @@ void loop(){
   Serial.print("RV:");
  Serial.println(velo2);
  */
-
- m.printInf();
-//Serial.println(m.velo1);
-//Serial.println(m.velo2);
 // Input = 200;
 // myPID.Compute();
 // Serial.println(Output);
 // digitalWrite(LeftMotorDire,1);    
 // analogWrite(LeftMotorSpeed,Output);
   //analogWrite(6, Output);Serial.print("Output:" );Serial.println(Output);
- delay(100);
+ delay(10);
+}
+
+double filter(int n){
+  sum=0;
+  int i = 0;
+  while(i<n){
+      m.printInf();
+      delay(10);
+      i+=1;
+      if(m.velo1<50&&m.velo1>0)
+      {
+      sum  = m.velo1+sum;
+     /*
+     Serial.print(m.velo1);
+     Serial.print("   ");
+     Serial.println(sum);*/
+      }
+  }
+  
+vel = sum/n;
+//Serial.println(vel);
+sum=0;
+return vel;
+}
+
+void contrl(double V){
+  int oldSp,curSp,excSp;
+  curSp =m.velo2*10;
+  if(curSp<excSp)
+     {
+       int setSp = oldSp+(excSp-curSp)*10;
+       m.setSpeed(forward,forward,setSp,255);
+    }
+    if(curSp>excSp)
+     {
+       int setSp = oldSp-(excSp-curSp)*10;
+       m.setSpeed(forward,forward,setSp,255);
+    }
 }
 
 
